@@ -1,0 +1,46 @@
+# Flask & Python
+server/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+
+# Python environments and cache
+.env
+*.env
+*.venv
+
+
+
+
+
+# Node.js
+client/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+*.bak
+
+# IDE and editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build files
+build/
+dist/
+
+# Coverage reports
+coverage/
+.nyc_output/
+coverage-final.json
