@@ -66,26 +66,9 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-md mx-auto p-4 bg-gray-100 max-w-2xl">
-      <div className="flex-1 overflow-y-auto p-4  bg-slate-100 rounded-lg shadow-lg">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-2 ${
-              msg.role === "user" ? "text-right" : "text-left"
-            }`}
-          >
-            <div
-              className={`inline-block px-4 py-2 rounded-lg ${
-                msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-300"
-              }`}
-            >
-              {msg.content}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="mt-4 flex">
+    <div className="flex flex-col h-screen w-full max-w-screen-2xl mx-auto p-4 bg-gray-100">
+      {/* Chat Input Section at the Top */}
+      <div className="mb-4 flex">
         <input
           type="text"
           value={input}
@@ -107,6 +90,44 @@ const ChatBot = () => {
         >
           {isListening ? "Stop" : "Speak"}
         </button>
+      </div>
+
+      {/* Suggestions Section */}
+      <div className="mb-4 flex space-x-2">
+        {[
+          "What are my remaining tasks for today?",
+          "How can I increase my crop yield?",
+          "What is organic farming?",
+          "How can I improve my soil quality?",
+        ].map((suggestion, index) => (
+          <button
+            key={index}
+            onClick={() => setInput(suggestion)}
+            className="px-4 py-2 border border-gray-400 rounded-full text-gray-700 bg-gray-200 hover:bg-gray-300"
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+
+      {/* Message Display Section */}
+      <div className="flex-1 overflow-y-auto p-6 rounded-lg ">
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`mb-4 ${
+              msg.role === "user" ? "text-right" : "text-left"
+            }`}
+          >
+            <div
+              className={`inline-block px-4 py-2 rounded-lg ${
+                msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-300"
+              }`}
+            >
+              {msg.content}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

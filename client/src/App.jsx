@@ -25,6 +25,10 @@ import ChatBot from "./screens/ChatBot";
 import Profile from "./screens/Profile";
 import SellCrop from "./screens/SellCrop";
 import PlantDisease from "./screens/PlantDisease";
+import Farm from "./screens/Farm";
+import AddFarm from "./screens/AddFarm";
+import Blog from "./screens/blog";
+import Try from "./screens/Try";
 
 function App() {
   const location = useLocation();
@@ -58,6 +62,9 @@ function App() {
           <Route path="/scheme" element={<Scheme />} />
           <Route path="/chatbot" element={<ChatBot />} />
           <Route path="/sellcrop" element={<SellCrop />} />
+          <Route path="/farm" element={<Farm />} />
+          <Route path="/addfarm" element={<AddFarm />} />
+          <Route path="/blog" element={<Blog />} />
         </Routes>
         {/* {!isLandingOrLogin && <Footer />} */}
       </div>
