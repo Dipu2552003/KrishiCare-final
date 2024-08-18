@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+
 const LandingPage = () => {
   const [language, setLanguage] = useState("en");
   const [content, setContent] = useState(null);

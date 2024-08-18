@@ -19,6 +19,12 @@ const Profile = () => {
 
   const handleAddFarm = () => {};
 
+  const cropSellInfo = [
+    { name: "Wheat", status: "Sold", price: 2500 },
+    { name: "Rice", status: "Pending", price: 1800 },
+    { name: "Corn", status: "Sold", price: 2100 },
+  ];
+
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen">
       <div
@@ -77,11 +83,34 @@ const Profile = () => {
             <p className="text-gray-600">Field Area: {fieldArea}</p>
 
             <div className="mt-4">
-              <h2 className="text-xl font-semibold text-gray-700">Crops</h2>
+              <h2 className="text-xl font-semibold text-gray-700">Farms</h2>
               <ul className="list-disc pl-5 mt-2">
                 {crops.map((crop, index) => (
                   <li key={index} className="text-gray-600">
-                    {crop.name}: {crop.area}
+                    {crop.name}: {crop.area} acres
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold text-gray-700">
+                Crops Selling Info
+              </h2>
+              <ul className="list-disc pl-5 mt-2">
+                {cropSellInfo.map((crop, index) => (
+                  <li key={index} className="text-gray-600">
+                    {crop.name} - Status:{" "}
+                    <span
+                      className={
+                        crop.status === "Pending"
+                          ? "text-yellow-600"
+                          : "text-green-600"
+                      }
+                    >
+                      {crop.status}
+                    </span>
+                    {" | "} Price: ₹{crop.price}
                   </li>
                 ))}
               </ul>
