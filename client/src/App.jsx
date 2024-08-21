@@ -28,7 +28,8 @@ import PlantDisease from "./screens/PlantDisease";
 import Farm from "./screens/Farm";
 import AddFarm from "./screens/AddFarm";
 import Blog from "./screens/blog";
-import Try from "./screens/Try";
+import Market from "./screens/Market";
+import Try2 from "./screens/Try2";
 
 function App() {
   const location = useLocation();
@@ -65,6 +66,9 @@ function App() {
           <Route path="/farm" element={<Farm />} />
           <Route path="/addfarm" element={<AddFarm />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/market" element={<Market />} />
+          <Route path="market/rice" element={<SellCrop />} />
+          <Route path="/try2" element={<Try2 />} />
         </Routes>
         {/* {!isLandingOrLogin && <Footer />} */}
       </div>

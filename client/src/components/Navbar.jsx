@@ -102,11 +102,11 @@ function Navbar() {
             </h6>
           </Link> */}
           <Link
-            to="/sellcrop"
+            to="market"
             className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
           >
             <h6 className="text-teal-200 font-Merriweather md:text-lg">
-              SellCrop
+              Market
             </h6>
           </Link>
           <Link
@@ -118,11 +118,11 @@ function Navbar() {
             </h6>
           </Link>
           <Link
-            to="/chatbot"
+            to="/prediction"
             className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
           >
             <h6 className="text-teal-200 font-Merriweather md:text-lg">
-              Chatbot
+            Prediction
             </h6>
           </Link>
           <Link to="/login">

@@ -1,130 +1,115 @@
-import React, { useState } from "react";
+import React from 'react';
 
-const SellCrop = () => {
-  const [crop, setCrop] = useState({
-    farmerName: "",
-    cropName: "",
-    location: "",
-    price: "",
-    image: null,
-  });
-
-  const [crops, setCrops] = useState([]);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCrop({ ...crop, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setCrops([...crops, { ...crop, id: Date.now(), verified: false }]);
-    setCrop({
-      farmerName: "",
-      cropName: "",
-      location: "",
-      price: "",
-      image: null,
-    });
-  };
-
+function SellCrop() {
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Sell Your Crop</h2>
-      <form onSubmit={handleSubmit} className="mb-8">
-        <div className="mb-4">
-          <label className="block text-gray-700">Farmer Name:</label>
-          <input
-            type="text"
-            value={crop.farmerName}
-            onChange={(e) => setCrop({ ...crop, farmerName: e.target.value })}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            required
-          />
+    <div className="max-w-4xl mx-auto p-4 bg-white shadow-md rounded-md">
+      <form>
+        {/* Product Section */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block text-gray-700">Product</label>
+            <select className="w-full border border-gray-300 p-2 rounded">
+              <option>Rice</option>
+              
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700">Type of Offer</label>
+            <select className="w-full border border-gray-300 p-2 rounded">
+              <option>Bundle Deal</option>
+              <option>Bulk Discount</option>
+              <option>Limited Time</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700">Total Weight</label>
+            <input type="text" className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+          <div>
+            <label className="block text-gray-700">Weight Unit</label>
+            <select className="w-full border border-gray-300 p-2 rounded">
+              <option>Metric Ton (M Ton)</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700">Price per weight unit (rs)</label>
+            <input type="text" className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+          {/* <div>
+            <label className="block text-gray-700">Advanced payment (%)</label>
+            <input type="text" className="w-full border border-gray-300 p-2 rounded" />
+          </div> */}
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Crop Name:</label>
-          <input
-            type="text"
-            value={crop.cropName}
-            onChange={(e) => setCrop({ ...crop, cropName: e.target.value })}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Location:</label>
-          <input
-            type="text"
-            value={crop.location}
-            onChange={(e) => setCrop({ ...crop, location: e.target.value })}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Price ($):</label>
-          <input
-            type="number"
-            value={crop.price}
-            onChange={(e) => setCrop({ ...crop, price: e.target.value })}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Upload Image:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="mt-1"
-          />
-        </div>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          Submit
-        </button>
-      </form>
 
-      <h2 className="text-2xl font-bold mb-4">Available Crops</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {crops.length > 0 ? (
-          crops.map((crop) => (
-            <div
-              key={crop.id}
-              className="border border-gray-300 rounded-lg p-4 shadow-md"
-            >
-              {crop.image && (
-                <img
-                  src={crop.image}
-                  alt={crop.cropName}
-                  className="w-full h-48 object-cover mb-4 rounded-md"
-                />
-              )}
-              <h3 className="text-xl font-semibold mb-2">{crop.cropName}</h3>
-              <p className="text-gray-700">Farmer: {crop.farmerName}</p>
-              <p className="text-gray-700">Location: {crop.location}</p>
-              <p className="text-gray-700">Price: ${crop.price}</p>
-              <p className="text-gray-700">
-                Verified: {crop.verified ? "Yes" : "No"}
-              </p>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-700">No crops available.</p>
-        )}
-      </div>
+        {/* Product Details Section */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block text-gray-700">Product Type</label>
+            <select className="w-full border border-gray-300 p-2 rounded">
+              <option>small</option>
+              <option>medium</option>
+              <option>large</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700">Product Status</label>
+            <select className="w-full border border-gray-300 p-2 rounded">
+              <option>Broken</option>
+              <option>Brown</option>
+              <option>Paddy</option>
+              
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700">Variety</label>
+            <select className="w-full border border-gray-300 p-2 rounded">
+              <option>Basmati</option>
+              <option>Indrayani</option>
+              <option>Kolam</option>
+            </select>
+          </div>
+          {/* Add other input fields following the same structure */}
+        </div>
+
+        {/* Logistics Section */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block text-gray-700">Initial Delivery Date</label>
+            <input type="date" className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+          <div>
+            <label className="block text-gray-700">Final Delivery Date</label>
+            <input type="date" className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+          <div>
+            <label className="block text-gray-700">Offer Expiration Date</label>
+            <input type="date" className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+          <div>
+            <label className="block text-gray-700">Logistics Incoterms</label>
+            <select className="w-full border border-gray-300 p-2 rounded">
+              <option>Select one</option>
+            </select>
+          </div>
+          <div className="col-span-3">
+            <label className="block text-gray-700">Signature</label>
+            <input type="file" accept=".png,.jpg,.jpeg,.pdf" className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+        </div>
+
+        {/* Terms and Submit Button */}
+        <div className="flex items-center mb-4">
+          <input type="checkbox" className="mr-2" />
+          <label className="text-gray-700">I agree with the Agri Marketplace Terms and Conditions for buy and sell offers</label>
+        </div>
+        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">Submit Offer</button>
+      </form>
     </div>
   );
-};
+}
 
 export default SellCrop;
+
+
+
+

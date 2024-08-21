@@ -1,150 +1,172 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import axios from "axios";
-import content from "../utils/content";
-import { Link } from "react-router-dom";
-
-const API_KEY = "38c592a76d3a8b863dbd0eb63dfa0db7";
 
 const Home = () => {
-  const { hero, predictions } = content;
-  const [city, setCity] = useState("pune");
-  const [weatherData, setWeatherData] = useState(null);
-  const [error, setError] = useState(null);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isListening, setIsListening] = useState(false);
 
-  const targetSectionRef = useRef(null); // Define targetSectionRef here
+  const [blogs] = useState([
+    { title: 'Sustainable Farming Practices for 2024', image: 'https://images.news18.com/ibnlive/uploads/2024/06/farmers-2024-06-0bbe5be3a43c0016487ae75b6520f9ce.jpg?impolicy=website&width=640&height=480', content: 'Discover the latest in sustainable farming techniques that can help increase yield and reduce environmental impact.' },
+    { title: 'फसल प्रौद्योगिकी में नवाचार', image: 'https://www.smsfoundation.org/wp-content/uploads/2021/04/Chalitar.jpg', content: 'Explore the newest technologies in crop management that can help boost productivity and efficiency on the farm.' },
+    { title: 'Understanding Precision Agriculture', image: 'https://www.cimmyt.org/content/uploads/2019/03/Women-Group-Bihar-001.jpg', content: 'Learn how precision agriculture can revolutionize your farming practices with data-driven insights and targeted interventions.' },
+  ]);
 
-  const handleCityChange = (e) => {
-    setCity(e.target.value);
-  };
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
 
-  useEffect(() => {
-    fetchWeather();
-  }, [city]);
-
-  const fetchWeather = () => {
-    if (city.trim() === "") {
-      alert("Please enter a city name");
-      return;
-    }
-
-    const units = "metric";
-    const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=${units}`;
-
-    axios
-      .get(URL)
-      .then((response) => {
-        setWeatherData(response.data);
-        setError(null);
-      })
-      .catch((error) => {
-        console.error("Error fetching weather data:", error);
-        setError("loading...");
-        setWeatherData(null);
-      });
-  };
-
-  const displayWeatherInfo = () => {
-    if (!weatherData) return null;
-
-    let backgroundColor = "";
-    if (weatherData.main.temp < 8) {
-      backgroundColor = "bg-blue-300";
-    } else if (weatherData.main.temp > 20) {
-      backgroundColor = "bg-orange-300";
+  const handleVoiceInput = () => {
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+      handleSend(); // Send message when stopping the recognition
     } else {
-      backgroundColor = "bg-gray-300";
+      recognition.start();
+      setIsListening(true);
     }
-
-    return (
-      <div
-        className={`pt-5 transition-all duration-500 ease-in-out rounded-md shadow-md ${backgroundColor} text-white`}
-      >
-        <Sidebar />
-        <h2 className="text-2xl font-semibold mb-2">
-          Location: {weatherData.name}, {weatherData.sys.country}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <p className="text-lg">Temperature: {weatherData.main.temp}°C</p>
-            <p className="text-lg">
-              Weather: {weatherData.weather[0].description}
-            </p>
-          </div>
-          <div>
-            <p className="text-lg">Humidity: {weatherData.main.humidity}%</p>
-            <p className="text-lg">Wind Speed: {weatherData.wind.speed} m/s</p>
-            <p className="text-lg">
-              Visibility: {weatherData.visibility / 1000} km
-            </p>
-          </div>
-        </div>
-      </div>
-    );
   };
 
-  const scrollToSection = () => {
-    if (targetSectionRef.current) {
-      targetSectionRef.current.scrollIntoView({ behavior: "smooth" });
+  recognition.onstart = () => {
+    setIsListening(true);
+  };
+
+  recognition.onend = () => {
+    setIsListening(false);
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = Array.from(event.results)
+      .map((result) => result[0])
+      .map((result) => result.transcript)
+      .join("");
+
+    setInput(transcript);
+  };
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    // Add user message to the chat
+    setMessages([...messages, { role: "user", content: input }]);
+
+    try {
+      // Send message to the backend
+      const response = await axios.post("http://127.0.0.1:5000/api/chatbot", {
+        input,
+      });
+
+      // Add chatbot response to the chat
+      setMessages([
+        ...messages,
+        { role: "user", content: input },
+        { role: "assistant", content: response.data.message },
+      ]);
+
+      // Clear input field
+      setInput("");
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
   };
 
   return (
     <>
-      <section id="home" className="overflow-hidden max-w-full">
-        {/* Main Content Section: Image and Name */}
-        <div className="relative flex flex-col md:flex-row md:items-center justify-center max-w-screen-2xl container">
-          <div className="flex-1 flex flex-col justify-center sm:p-10 md:p-16">
-            <h1 className="text-teal-600 font-bold text-4xl">
-              {hero.firstName}
-            </h1>
-            <h6 className="text-dark_primary font-Inria mt-2">
-              {hero.LastName}
-            </h6>
-            <button
-              id="getWeatherBtn"
-              className="bg-green-700 text-white p-3 rounded-md focus:ring focus:border-blue-300 w-40 mt-4"
-              onClick={scrollToSection}
-            >
-              Explore
-            </button>
-          </div>
-
-          <div className="flex-1 flex relative max-h-[calc(100vh-4rem)]">
-            <img
-              className="w-full h-full object-cover"
-              src="images/home2.png"
-              alt="Home"
+      <section id="home" className="overflow-auto min-h-screen max-w-full bg-gray-100">
+        <div className="flex flex-col min-h-screen w-full max-w-screen-xl mx-auto p-4">
+          {/* Chat Input Section */}
+          <div className="mb-4 flex flex-col sm:flex-row sm:items-center">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="flex-1 px-4 py-2 border rounded-lg mb-2 sm:mb-0 sm:mr-2"
+              placeholder="Type your message..."
             />
+            <div className="flex gap-2">
+              <button
+                onClick={handleSend}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              >
+                Send
+              </button>
+              <button
+                onClick={handleVoiceInput}
+                className={`px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition ${
+                  isListening ? "bg-red-500" : "bg-indigo-600"
+                }`}
+              >
+                {isListening ? "Stop" : "Speak"}
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="pt-10">
-          <h4 className="text-center font-Merriweather my-2">
-            Our Crop Predictions
-          </h4>
-          <div className="max-w-screen-2xl mx-auto p-5 sm:p-10 md:p-16">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {predictions.solutions_content.map((item, i) => (
-                <Link to={item.link} key={i} className="flex flex-col">
-                  <div className="rounded overflow-hidden shadow-lg h-full flex flex-col">
-                    <div className="relative h-48">
-                      <img
-                        className="w-full h-full object-cover"
-                        src={item.logo}
-                        alt="..."
-                      />
-                    </div>
+          {/* Suggestions Section */}
+          <div className="mb-4 flex flex-wrap gap-2">
+            {[
+              "What are my remaining tasks for today?",
+              "How can I increase my crop yield?",
+              "What is organic farming?",
+              "How can I improve my soil quality?",
+            ].map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => setInput(suggestion)}
+                className="px-4 py-2 border border-gray-400 rounded-full text-gray-700 bg-gray-200 hover:bg-gray-300 transition"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
 
-                    <div className="px-6 py-4 flex-grow">
-                      <h5 className="font-semibold text-lg inline-block hover:text-indigo-600 transition duration-500 ease-in-out">
-                        {item.org}
-                      </h5>
-                    </div>
-                    <div className="px-6 py-4 flex items-center">
-                      <span className="py-1 text-sm font-regular text-gray-900 mr-1 flex items-center"></span>
+          {/* Message Display Section */}
+          <div
+            className="flex-none overflow-hidden p-4 sm:p-6 rounded-lg bg-white shadow-md mb-4"
+            style={{ width: '100%', height: '300px' }} // Adjust height as needed
+          >
+            <div className="flex flex-col h-full">
+              <div className="flex-1 overflow-auto">
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}
+                  >
+                    <div
+                      className={`inline-block px-4 py-2 rounded-lg ${
+                        msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-300"
+                      }`}
+                    >
+                      {msg.content}
                     </div>
                   </div>
-                </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Blog Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4 text-center">Share Knowledge and Stay Informed</h2>
+            <div className="grid grid-cols-1 gap-4">
+              {blogs.map((blog, index) => (
+                <div
+                  key={index}
+                  className="bg-white shadow-md rounded-lg overflow-hidden"
+                >
+                  <div className="relative w-full h-80"> {/* Adjust the height as needed */}
+                    <img
+                      src={blog.image}
+                      alt={blog.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h2 className="text-lg font-semibold mb-2">{blog.title}</h2>
+                    <p className="text-gray-700">{blog.content}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

@@ -1,58 +1,157 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSackDollar,
-  faCow,
-  faHammer,
-  faUsers,
-  faTractor,
-  faSeedling,
-} from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import content from "../utils/content";
+import { Link } from "react-router-dom";
 
-const categories = [
-  { id: 1, name: "Commodities", icon: faSackDollar },
-  { id: 2, name: "Cattle", icon: faCow },
-  { id: 3, name: "Equipments", icon: faHammer },
-  { id: 4, name: "Fieldforce", icon: faUsers },
-  { id: 5, name: "Machinery", icon: faTractor },
-  { id: 6, name: "Agriculture", icon: faSeedling },
-];
+const API_KEY = "38c592a76d3a8b863dbd0eb63dfa0db7";
 
-const CategoryCard = ({ name, icon }) => (
-  <div className="bg-gradient-to-r from-green-400 to-green-300 text-white rounded-lg p-6 m-3 w-40 h-40 flex flex-col items-center justify-center shadow-lg">
-    <FontAwesomeIcon icon={icon} size="3x" />
-    <h3 className="mt-4 font-semibold">{name}</h3>
-  </div>
-);
+const Home = () => {
+  const { hero, predictions } = content;
+  const [city, setCity] = useState("pune");
+  const [weatherData, setWeatherData] = useState(null);
+  const [error, setError] = useState(null);
 
-const Try = () => {
+  const targetSectionRef = useRef(null); // Define targetSectionRef here
+
+  const handleCityChange = (e) => {
+    setCity(e.target.value);
+  };
+
+  useEffect(() => {
+    fetchWeather();
+  }, [city]);
+
+  const fetchWeather = () => {
+    if (city.trim() === "") {
+      alert("Please enter a city name");
+      return;
+    }
+
+    const units = "metric";
+    const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=${units}`;
+
+    axios
+      .get(URL)
+      .then((response) => {
+        setWeatherData(response.data);
+        setError(null);
+      })
+      .catch((error) => {
+        console.error("Error fetching weather data:", error);
+        setError("loading...");
+        setWeatherData(null);
+      });
+  };
+
+  const displayWeatherInfo = () => {
+    if (!weatherData) return null;
+
+    let backgroundColor = "";
+    if (weatherData.main.temp < 8) {
+      backgroundColor = "bg-blue-300";
+    } else if (weatherData.main.temp > 20) {
+      backgroundColor = "bg-orange-300";
+    } else {
+      backgroundColor = "bg-gray-300";
+    }
+
+    return (
+      <div
+        className={`pt-5 transition-all duration-500 ease-in-out rounded-md shadow-md ${backgroundColor} text-white`}
+      >
+        <Sidebar />
+        <h2 className="text-2xl font-semibold mb-2">
+          Location: {weatherData.name}, {weatherData.sys.country}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p className="text-lg">Temperature: {weatherData.main.temp}°C</p>
+            <p className="text-lg">
+              Weather: {weatherData.weather[0].description}
+            </p>
+          </div>
+          <div>
+            <p className="text-lg">Humidity: {weatherData.main.humidity}%</p>
+            <p className="text-lg">Wind Speed: {weatherData.wind.speed} m/s</p>
+            <p className="text-lg">
+              Visibility: {weatherData.visibility / 1000} km
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const scrollToSection = () => {
+    if (targetSectionRef.current) {
+      targetSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      {/* Logo */}
-      <div className="mb-6">
-        <img src="logo.png" alt="Naagali Logo" className="w-28 h-28" />
-      </div>
+    <>
+      <section id="home" className="overflow-hidden max-w-full">
+        {/* Main Content Section: Image and Name */}
+        <div className="relative flex flex-col md:flex-row md:items-center justify-center max-w-screen-2xl container">
+          <div className="flex-1 flex flex-col justify-center sm:p-10 md:p-16">
+            <h1 className="text-teal-600 font-bold text-4xl">
+              {hero.firstName}
+            </h1>
+            <h6 className="text-dark_primary font-Inria mt-2">
+              {hero.LastName}
+            </h6>
+            <button
+              id="getWeatherBtn"
+              className="bg-green-700 text-white p-3 rounded-md focus:ring focus:border-blue-300 w-40 mt-4"
+              onClick={scrollToSection}
+            >
+              Explore
+            </button>
+          </div>
 
-      {/* Title */}
-      <h1 className="text-xl font-semibold mb-6">Select the category</h1>
+          <div className="flex-1 flex relative max-h-[calc(100vh-4rem)]">
+            <img
+              className="w-full h-full object-cover"
+              src="images/home2.png"
+              alt="Home"
+            />
+          </div>
+        </div>
 
-      {/* Category Cards */}
-      <div className="grid grid-cols-3 gap-6">
-        {categories.map((category) => (
-          <CategoryCard
-            key={category.id}
-            name={category.name}
-            icon={category.icon}
-          />
-        ))}
-      </div>
+        <div className="pt-10">
+          <h4 className="text-center font-Merriweather my-2">
+            Our Crop Predictions
+          </h4>
+          <div className="max-w-screen-2xl mx-auto p-5 sm:p-10 md:p-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {predictions.solutions_content.map((item, i) => (
+                <Link to={item.link} key={i} className="flex flex-col">
+                  <div className="rounded overflow-hidden shadow-lg h-full flex flex-col">
+                    <div className="relative h-48">
+                      <img
+                        className="w-full h-full object-cover"
+                        src={item.logo}
+                        alt="..."
+                      />
+                    </div>
 
-      {/* Continue Button */}
-      <button className="mt-8 bg-green-400 hover:bg-green-500 text-white font-semibold py-2 px-8 rounded-lg">
-        CONTINUE
-      </button>
-    </div>
+                    <div className="px-6 py-4 flex-grow">
+                      <h5 className="font-semibold text-lg inline-block hover:text-indigo-600 transition duration-500 ease-in-out">
+                        {item.org}
+                      </h5>
+                    </div>
+                    <div className="px-6 py-4 flex items-center">
+                      <span className="py-1 text-sm font-regular text-gray-900 mr-1 flex items-center"></span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 
-export default Try;
+export default Home;

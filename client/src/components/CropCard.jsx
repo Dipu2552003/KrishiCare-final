@@ -109,7 +109,7 @@ export default function CropCard() {
       <CardHeader color="" className="relative h-96 bg-[#2C3A47]">
         {/* Image  */}
         <img
-          src="https://codeswear.nyc3.cdn.digitaloceanspaces.com/tshirts/pack-of-five-plain-tshirt-white/1.webp"
+          src="https://upload.wikimedia.org/wikipedia/commons/a/a3/Vehn%C3%A4pelto_6.jpg"
           alt="card-image"
         />
       </CardHeader>

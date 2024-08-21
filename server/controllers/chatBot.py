@@ -3,7 +3,7 @@ from flask import request, jsonify
 import google.generativeai as genai
 
 # Configure the API key for Google Generative AI
-genai.configure(api_key="AIzaSyCedk7pWXZNeLgM0X9K5XzqOiiFOZcnm5E")
+genai.configure(api_key="AIzaSyBlNukNpMEqL9qq5-0qbW_vG8G-a2vyEIk")
 
 # Initialize conversation history
 messages = []
