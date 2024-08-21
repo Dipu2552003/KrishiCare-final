@@ -1,72 +1,86 @@
 const express = require('express');
-const Crop = require('../models/crop');
-const Farmer = require('../models/farmer'); // Add this to access Farmer model
 const router = express.Router();
+const Crop = require('../models/crop');
+const multer = require('multer');
+const path = require('path');
 
-// Create a new crop
-router.post('/', async (req, res) => {
-  const {
-    cropName,
-    cropType,
-    offerType,
-    date,
-    totalWeight,
-    weightUnit,
-    priceUnit,
-    productType,
-    productStatus,
-    buyer,
-    deliveryTerms,
-    qualityAssurance,
-    farmerId // Added farmerId
-  } = req.body;
-
-  try {
-    const crop = new Crop({
-      cropName,
-      cropType,
-      offerType,
-      date,
-      totalWeight,
-      weightUnit,
-      priceUnit,
-      productType,
-      productStatus,
-      buyer,
-      deliveryTerms,
-      qualityAssurance,
-      farmerId // Save the farmerId
-    });
-
-    await crop.save();
-    res.status(201).json(crop);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+// Storage configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Directory to save the uploaded files
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
   }
 });
 
-// Get all crops with farmer names
+const upload = multer({ storage: storage });
+
+// POST endpoint for adding a new crop with an optional image
+router.post('/', upload.single('photo'), async (req, res) => {
+  try {
+    const cropData = {
+      cropName: req.body.cropName,
+      cropType: req.body.cropType,
+      offerType: req.body.offerType,
+      date: req.body.date,
+      totalWeight: req.body.totalWeight,
+      weightUnit: req.body.weightUnit,
+      priceUnit: req.body.priceUnit,
+      productType: req.body.productType,
+      productStatus: req.body.productStatus,
+      buyer: req.body.buyer,
+      deliveryTerms: req.body.deliveryTerms,
+      qualityAssurance: req.body.qualityAssurance,
+      farmerId: req.body.farmerId,
+      photo: req.file ? req.file.path : null,
+      price: req.body.totalWeight * req.body.priceUnit // Calculate price here as well
+    };
+
+    const crop = new Crop(cropData);
+    await crop.save();
+    res.status(201).json(crop);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+// GET endpoint for retrieving all crops
 router.get('/', async (req, res) => {
   try {
-    const crops = await Crop.find().populate('farmerId', 'name'); // Populate farmer name
+    const crops = await Crop.find().populate('farmerId'); // Populate farmer details
     res.json(crops);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// Find a farmer's name from crop
-router.get('/:id/farmer', async (req, res) => {
+// PUT endpoint for updating the verified status of a crop
+router.put('/:id', async (req, res) => {
   try {
-    const crop = await Crop.findById(req.params.id).populate('farmerId', 'name');
+    const { id } = req.params;
+    const { verified, currentBid, highestBidder } = req.body;
+
+    // Construct the update object
+    const updateFields = {};
+    if (verified !== undefined) updateFields.verified = verified;
+    if (currentBid !== undefined) updateFields.currentBid = currentBid;
+    if (highestBidder !== undefined) updateFields.highestBidder = highestBidder;
+
+    // Find and update the crop
+    const crop = await Crop.findByIdAndUpdate(id, updateFields, { new: true });
+
     if (!crop) {
       return res.status(404).json({ message: 'Crop not found' });
     }
-    const farmer = crop.farmerId; // Access the farmer object
-    res.json({ farmerName: farmer.name });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+    res.json(crop);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
+
+
 
 module.exports = router;

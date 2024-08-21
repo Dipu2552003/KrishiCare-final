@@ -16,7 +16,7 @@ const staticAgreements = [
     buyer: '',
     deliveryTerms: 'Delivery within 7 days of payment',
     qualityAssurance: 'Certified by local agricultural board',
-
+    product : 'wheat'
   },
 ];
 
@@ -49,7 +49,7 @@ const Try2 = () => {
             <h3 className="text-lg font-semibold underline">1. Duties</h3>
             <p className="text-base mb-2">Contractor will perform agricultural work as per the terms outlined below:</p>
             <ul className="list-disc pl-6 text-base">
-              <li>Farmer Name: <span className="underline">{selectedAgreement.farmerId.name}</span></li>
+              <li>Farmer Name: <span className="underline">{selectedAgreement.name}</span></li>
               <li>Type of Offer: <span className="underline">{selectedAgreement.offerType}</span></li>
               <li>Crops to be harvested: <span className="underline">{selectedAgreement.cropType}</span></li>
               <li>Total Weight: <span className="underline">{selectedAgreement.TotalWeight}</span></li>

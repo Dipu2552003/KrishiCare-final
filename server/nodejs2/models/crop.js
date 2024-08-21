@@ -26,7 +26,7 @@ const cropSchema = new mongoose.Schema({
     required: true
   },
   priceUnit: {
-    type: String,
+    type: Number, // Changed to Number to perform multiplication
     required: true
   },
   productType: {
@@ -50,7 +50,24 @@ const cropSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Farmer',
     required: true
+  },
+  photo: {
+    type: String  // URL or path to the photo
+  },
+  verified: {
+    type: Boolean,
+    default: false
+  },
+  price: {
+    type: Number,
+    required: true
   }
+});
+
+// Middleware to calculate the price before saving the document
+cropSchema.pre('save', function(next) {
+  this.price = this.totalWeight * this.priceUnit;
+  next();
 });
 
 module.exports = mongoose.model('Crop', cropSchema);

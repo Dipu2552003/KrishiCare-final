@@ -21,6 +21,16 @@ const AddFarm = () => {
       const { latlng } = e;
       setUserLocation(latlng); // Update state with user location
       L.marker(latlng).addTo(map).bindPopup("You are here!").openPopup();
+      
+      // Draw a quadrilateral to show the farm area
+      const farmArea = [
+        [latlng.lat + 0.01, latlng.lng - 0.01],
+        [latlng.lat + 0.01, latlng.lng + 0.01],
+        [latlng.lat - 0.01, latlng.lng + 0.01],
+        [latlng.lat - 0.01, latlng.lng - 0.01],
+      ];
+      
+      L.polygon(farmArea, { color: 'blue', weight: 2 }).addTo(map).bindPopup("Farm Area");
     });
 
     map.on("locationerror", (e) => {

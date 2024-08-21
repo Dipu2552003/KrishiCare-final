@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import content from "../utils/content";
 
 const Login = () => {
@@ -11,7 +12,11 @@ const Login = () => {
   const handleLogin = () => {
     if (email === "farmer@gmail.com" && password === "farmer123") {
       navigate("/home");
-    } else if (email === "trader@gmail.com" && password === "trader123") {
+    } else if (email === "trader1@gmail.com" && password === "trader123") {
+      Cookies.set("traderName", "Trader1", { expires: 1 }); // Set cookie with trader's name
+      navigate("/trade");
+    } else if (email === "trader2@gmail.com" && password === "trader123") {
+      Cookies.set("traderName", "Trader2", { expires: 1 }); // Set cookie with trader's name
       navigate("/trade");
     } else if (email === "inspector@gmail.com" && password === "inspector123") {
       navigate("/inspect");
@@ -73,7 +78,9 @@ const Login = () => {
                   <span className="font-bold">farmer@gmail.com, farmer123</span>
                   <br />
                   <span>Login Credential : For Trader </span>
-                  <span className="font-bold">trader@gmail.com, trader123</span>
+                  <span className="font-bold">trader1@gmail.com, trader123</span>
+                  <br />
+                  <span className="font-bold">trader2@gmail.com, trader123</span>
                   <br />
                   <span>Login Credential : For Inspector </span>
                   <span className="font-bold">

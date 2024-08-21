@@ -31,6 +31,10 @@ import Blog from "./screens/blog";
 import Market from "./screens/Market";
 import Try2 from "./screens/Try2";
 
+
+//rent
+// import RentHome from "./screens/Rent/Home/RentHome";
+
 function App() {
   const location = useLocation();
   const isLandingOrLogin =
@@ -69,6 +73,7 @@ function App() {
           <Route path="/market" element={<Market />} />
           <Route path="market/rice" element={<SellCrop />} />
           <Route path="/try2" element={<Try2 />} />
+          {/* <Route path="/home/home" element={<RentHome/>}/> */}
         </Routes>
         {/* {!isLandingOrLogin && <Footer />} */}
       </div>
