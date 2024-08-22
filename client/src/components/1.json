@@ -1,0 +1,22 @@
+{
+    "_id": {
+      "$oid": "66c6f3a8d28c5e3b964c7e2a"
+    },
+    "cropName": "Rice",
+    "cropType": "Cereal",
+    "offerType": "Auction",
+    "date": "2024-08-22T00:00:00.000Z",
+    "totalWeight": 1500,
+    "weightUnit": "kg",
+    "priceUnit": 20,
+    "productType": "Basmati",
+    "productStatus": "In Stock",
+    "buyer": "Jane Smith",
+    "deliveryTerms": "Delivery within 1 week",
+    "qualityAssurance": "Premium Quality",
+    "farmerId": "66c622c5fc0bc17f485d273f",
+    "photo": "https://example.com/photos/rice_crop.jpg",
+    "verified": true,
+    "price": 30000
+  }
+  

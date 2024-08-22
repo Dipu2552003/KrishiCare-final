@@ -12,6 +12,8 @@ import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 export default function CropCard() {
   const [crops, setCrops] = useState([]);
@@ -20,6 +22,9 @@ export default function CropCard() {
   const [leaderboard, setLeaderboard] = useState([]);
 
   const [traderName, setTraderName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCrop, setSelectedCrop] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -110,65 +115,20 @@ export default function CropCard() {
     setBids(prev => ({ ...prev, [cropId]: "" }));
   };
 
-  const handlePayment = async () => {
-    try {
-      const res = await fetch(`http://localhost:4000/api/payment/order`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: Object.values(currentBid).reduce((acc, val) => acc + val, 0),
-        }),
-      });
-
-      const data = await res.json();
-      handlePaymentVerify(data.data);
-    } catch (error) {
-      console.log(error);
-      toast.error("Payment failed.");
-    }
+  const handleOpenModal = (crop) => {
+    setSelectedCrop(crop);
+    setIsModalOpen(true);
   };
 
-  const handlePaymentVerify = async (data) => {
-    const options = {
-      key: "rzp_test_d6EaVYLYAwghkY",
-      amount: data.amount,
-      currency: data.currency,
-      name: "Devknus",
-      description: "Test Mode",
-      order_id: data.id,
-      handler: async (response) => {
-        try {
-          const res = await fetch(`http://localhost:4000/api/payment/verify`, {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            }),
-          });
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCrop(null);
+  };
 
-          const verifyData = await res.json();
-          if (verifyData.message) {
-            toast.success(verifyData.message);
-          } else {
-            toast.error("Payment verification failed.");
-          }
-        } catch (error) {
-          console.log(error);
-          toast.error("Error verifying payment.");
-        }
-      },
-      theme: {
-        color: "#5f63b8",
-      },
-    };
-    const rzp1 = new window.Razorpay(options);
-    rzp1.open();
+  const handleVerifyClick = async () => {
+    // Logic for verifying the agreement
+    toast.success("Agreement verified.");
+    handleCloseModal();
   };
 
   return (
@@ -192,7 +152,7 @@ export default function CropCard() {
                       {crop.cropName}
                     </Typography>
                     <Typography className="text-lg">
-                      ₹{currentBid[crop._id]} <span className="line-through text-gray-400">₹699</span>
+                      ₹{currentBid[crop._id]} <span className="line-through text-gray-400"></span>
                     </Typography>
                     <Input
                       type="number"
@@ -207,7 +167,7 @@ export default function CropCard() {
                     <Button onClick={() => handlePlaceBid(crop._id, crop.cropName)} className="w-full bg-yellow-500 hover:bg-yellow-600 mb-2">
                       Place Bid
                     </Button>
-                    <Button onClick={handlePayment} className="w-full bg-yellow-500 hover:bg-yellow-600">
+                    <Button onClick={() => handleOpenModal(crop)} className="w-full bg-yellow-500 hover:bg-yellow-600">
                       Buy Now
                     </Button>
                   </CardFooter>
@@ -238,6 +198,70 @@ export default function CropCard() {
           </ul>
         </div>
       </div>
+
+      {isModalOpen && selectedCrop && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50 overflow-auto">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full mx-4 sm:mx-6 lg:mx-8 max-h-[90vh] overflow-y-auto relative">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+              <FontAwesomeIcon icon={faTimes} size="lg" />
+            </button>
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold uppercase">Government of India</h1>
+              <h2 className="text-xl font-semibold mt-2 uppercase">Agreement for Farm Labor Contracting Services</h2>
+            </div>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold underline">Recitals</h3>
+              <p className="text-base mb-2">
+                A. Company desires to use the services of Contractor on an independent contractor basis for the purpose of performing agricultural services, such as tending, weeding, pruning trees or vines, and harvesting Company's products.
+              </p>
+              <p className="text-base mb-2">
+                B. Contractor warrants that Contractor is a farm labor contractor, duly registered and licensed as such under applicable laws. With respect to all actions, such as the hiring of laborers by the Contractor to provide services under this Company may use the Contractor under this Agreement, it is understood and agreed that Contractor assumes exclusive liability, as the same relates to such actions.
+              </p>
+              <p className="text-base mb-2">
+                C. Contractor acknowledges and agrees that the Contractor is an independent contractor and shall not be deemed to be an employee, agent, or partner of the Company for any purpose.
+              </p>
+              <h3 className="text-lg font-semibold underline mt-4">Agreement</h3>
+              <p className="text-base mb-2">
+                1. Contractor agrees to provide agricultural services to Company in a professional and workmanlike manner, in accordance with the specifications and instructions provided by the Company.
+              </p>
+              <p className="text-base mb-2">
+                2. Contractor shall be solely responsible for all federal, state, and local taxes, including but not limited to income tax, self-employment tax, and social security tax.
+              </p>
+              <p className="text-base mb-2">
+                3. Contractor shall provide its own tools, equipment, and materials necessary to perform the services under this Agreement.
+              </p>
+              <p className="text-base mb-2">
+                4. Contractor shall comply with all applicable laws and regulations in the performance of the services under this Agreement.
+              </p>
+              <p className="text-base mb-2">
+                5. Contractor shall maintain adequate insurance coverage for the services provided under this Agreement, including but not limited to liability insurance and workers' compensation insurance.
+              </p>
+              <h3 className="text-lg font-semibold underline mt-4">Terms</h3>
+              <p className="text-base mb-2">
+                1. This Agreement shall commence on the date of acceptance by the Contractor and shall continue until terminated by either party upon thirty (30) days written notice.
+              </p>
+              <p className="text-base mb-2">
+                2. Company may terminate this Agreement immediately if Contractor fails to perform the services in accordance with the specifications and instructions provided by the Company.
+              </p>
+              <p className="text-base mb-2">
+                3. Contractor shall not assign this Agreement or any of its rights or obligations hereunder without the prior written consent of the Company.
+              </p>
+              <p className="text-base mb-2">
+                4. This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof and supersedes all prior negotiations, understandings, and agreements.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <Button onClick={handleVerifyClick} className="bg-blue-500 text-white hover:bg-blue-600">
+                Verify and Proceed
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Toaster />
     </div>
   );
